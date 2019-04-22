@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package com.cit.micro.manager;
+option java_multiple_files = true;
+
+message Uid{
+    string uid = 1;
+}
+
+message Id{
+    string id = 1;
+}
+
+message Result{
+    bool success = 1;
+}
+
+message Subscribe{
+    string channel = 1;
+    string uid = 2;
+}
+
+service AccessManager{
+    rpc getUid(Id) returns(stream Uid);
+    rpc subscribeNew(Subscribe) returns(Result);
+}

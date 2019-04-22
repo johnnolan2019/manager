@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package com.cit.micro.data;
+option java_multiple_files = true;
+
+message LogData {
+    string uid = 1;
+    string text = 2;
+    int32 id = 3;
+    string channel = 4;
+}
+
+message Channel{
+    string channel = 1;
+}
+
+message Id{
+    int32 id = 1;
+}
+
+message Uid{
+    string uid = 1;
+}
+
+message Result{
+    bool success = 1;
+}
+
+service AccessDB{
+    rpc add(stream LogData) returns(Id);
+    rpc delete(Id) returns(Result);
+    rpc getEntry(Id) returns(LogData);
+    rpc getSystemLogs(Uid) returns(stream LogData);
+    rpc getAll(Id) returns(stream LogData);
+    rpc update(LogData) returns(Id);
+    rpc getChanel(Uid) returns(Channel);
+}

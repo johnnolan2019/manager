@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package com.cit.micro.logger;
+option java_multiple_files = true;
+
+message RemoteLog {
+    string timeStamp = 1;
+    string serviceName = 2;
+    string message = 3;
+}
+
+message ReturnBool{
+    bool result = 1;
+}
+
+service Logger{
+    rpc info(RemoteLog) returns (ReturnBool);
+    rpc error(RemoteLog) returns (ReturnBool);
+    rpc debug(RemoteLog) returns (ReturnBool);
+}
