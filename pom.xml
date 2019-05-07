@@ -115,7 +115,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.cit.micro.logger.LoggerApplication</mainClass>
+                            <mainClass>com.cit.micro.manager.ManagerApplication</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>dependency-jars/</classpathPrefix>
                         </manifest>
