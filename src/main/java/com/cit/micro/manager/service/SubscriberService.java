@@ -26,7 +26,7 @@ public class SubscriberService {
 
     public void subscribe(String mqttTopic){
         subscriber.setClientId(GenerteId.generateClientId());
-        subscriber.connect(mqttBroker,mqttTopic);
+        subscriber.connect(mqttBroker, mqttTopic);
     }
 
     public boolean connected(){

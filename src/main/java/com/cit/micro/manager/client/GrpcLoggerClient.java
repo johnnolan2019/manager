@@ -20,7 +20,7 @@ public class GrpcLoggerClient {
 
         ReturnBool logResponse = stub.info(RemoteLog.newBuilder()
                 .setTimeStamp(localDate.toString())
-                .setServiceName("Analysis_Service")
+                .setServiceName("Manager_Service")
                 .setMessage(message)
                 .build());
 
@@ -37,7 +37,7 @@ public class GrpcLoggerClient {
 
         ReturnBool logResponse = stub.error(RemoteLog.newBuilder()
                 .setTimeStamp(localDate.toString())
-                .setServiceName("Analysis_Service")
+                .setServiceName("Manager_Service")
                 .setMessage(message)
                 .build());
 
@@ -54,7 +54,7 @@ public class GrpcLoggerClient {
 
         ReturnBool logResponse = stub.debug(RemoteLog.newBuilder()
                 .setTimeStamp(localDate.toString())
-                .setServiceName("Analysis_Service")
+                .setServiceName("Manager_Service")
                 .setMessage(message)
                 .build());
 

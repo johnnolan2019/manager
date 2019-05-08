@@ -5,25 +5,34 @@ import com.cit.micro.manager.Uid;
 import com.cit.micro.manager.client.GrpcDataClient;
 import com.cit.micro.manager.client.GrpcLoggerClient;
 import com.cit.micro.manager.service.SubscriberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class ManagerService {
 
-    private final GrpcLoggerClient log = new GrpcLoggerClient();
-    private GrpcDataClient grpcDataClient;
-    private SubscriberService subscriberService;
-    private ListenerService listenerService;
+    private static final GrpcLoggerClient log = new GrpcLoggerClient();
+    private static GrpcDataClient grpcDataClient;
+    private static SubscriberService subscriberService;
 
-    private List<Uid> uids =  new ArrayList<>();
-    private List<Channel> channels = new ArrayList<>();
+    @Autowired
+    public ManagerService(GrpcDataClient grpcDataClientInstance,
+                          SubscriberService subscriberServiceInstance) {
+        subscriberService = subscriberServiceInstance;
+        grpcDataClient = grpcDataClientInstance;
+    }
 
-    private void populateUids(){
+    private static List<Uid> uids =  new ArrayList<>();
+    private static List<Channel> channels = new ArrayList<>();
+
+    private static void populateUids(){
         uids = grpcDataClient.getUidList();
     }
 
-    private void populateChannels(){
+    private static void populateChannels(){
         for (Uid managerUid: uids
              ) {
             com.cit.micro.data.Uid dataUid = com.cit.micro.data.Uid.newBuilder().setUid(managerUid.getUid()).build();
@@ -32,11 +41,12 @@ public class ManagerService {
 
     }
 
-    public void subscribeToChannel(){
+    public static void subscribeToChannels(){
         populateUids();
         populateChannels();
         for (Channel channel: channels
              ) {
+            log.info(String.format("Subscribing to channel %s", channel.getChannel()));
             subscriberService.subscribe(channel.getChannel());
         }
     }

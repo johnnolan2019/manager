@@ -99,6 +99,7 @@ public class GrpcDataClient {
 
         AccessDBGrpc.AccessDBBlockingStub stub = AccessDBGrpc.newBlockingStub(channel);
         Channel mqttChannel = stub.getChanel(uid);
+        logger.info(String.format("Found Channel %s", mqttChannel));
         channel.shutdown();
 
         return mqttChannel;

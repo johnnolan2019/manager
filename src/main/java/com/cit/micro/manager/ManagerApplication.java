@@ -2,6 +2,7 @@ package com.cit.micro.manager;
 
 import com.cit.micro.manager.client.GrpcLoggerClient;
 import com.cit.micro.manager.service.GrpcManager;
+import com.cit.micro.manager.service.ManagerService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +17,8 @@ public class ManagerApplication {
         final GrpcLoggerClient logger = new GrpcLoggerClient();
 
         SpringApplication.run(ManagerApplication.class, args);
+        ManagerService.subscribeToChannels();
+
         Server server = ServerBuilder
                 .forPort(6569)
                 .addService(new GrpcManager()).build();
