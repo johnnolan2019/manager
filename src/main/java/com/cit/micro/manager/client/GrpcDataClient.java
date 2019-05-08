@@ -1,6 +1,7 @@
 package com.cit.micro.manager.client;
 
 import com.cit.micro.data.AccessDBGrpc;
+import com.cit.micro.data.Channel;
 import com.cit.micro.data.Id;
 import com.cit.micro.data.LogData;
 import com.cit.micro.manager.Uid;
@@ -89,4 +90,17 @@ public class GrpcDataClient {
         channel.shutdown();
         return uidList;
     }
+
+    public Channel getChannel(com.cit.micro.data.Uid uid){
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6568)
+                .usePlaintext()
+                .build();
+
+        AccessDBGrpc.AccessDBBlockingStub stub = AccessDBGrpc.newBlockingStub(channel);
+        Channel mqttChannel = stub.getChanel(uid);
+        channel.shutdown();
+
+        return mqttChannel;
+    }
+
 }

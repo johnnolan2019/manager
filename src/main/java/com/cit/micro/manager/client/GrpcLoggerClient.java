@@ -11,17 +11,6 @@ import java.time.LocalDate;
 public class GrpcLoggerClient {
 
     public void info(String message) {
-        transmit(message);
-    }
-    public void error(String message) {
-        transmit(message);
-    }
-
-    public void debug(String message){
-        transmit(message);
-    }
-
-    private void transmit(String message){
         LocalDate localDate = LocalDate.now();
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6565)
                 .usePlaintext()
@@ -31,11 +20,44 @@ public class GrpcLoggerClient {
 
         ReturnBool logResponse = stub.info(RemoteLog.newBuilder()
                 .setTimeStamp(localDate.toString())
-                .setServiceName("Manager_Service")
+                .setServiceName("Analysis_Service")
                 .setMessage(message)
                 .build());
 
         channel.shutdown();
+    }
 
+    public void error(String message) {
+        LocalDate localDate = LocalDate.now();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6565)
+                .usePlaintext()
+                .build();
+
+        LoggerGrpc.LoggerBlockingStub stub = LoggerGrpc.newBlockingStub(channel);
+
+        ReturnBool logResponse = stub.error(RemoteLog.newBuilder()
+                .setTimeStamp(localDate.toString())
+                .setServiceName("Analysis_Service")
+                .setMessage(message)
+                .build());
+
+        channel.shutdown();
+    }
+
+    public void debug(String message){
+        LocalDate localDate = LocalDate.now();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6565)
+                .usePlaintext()
+                .build();
+
+        LoggerGrpc.LoggerBlockingStub stub = LoggerGrpc.newBlockingStub(channel);
+
+        ReturnBool logResponse = stub.debug(RemoteLog.newBuilder()
+                .setTimeStamp(localDate.toString())
+                .setServiceName("Analysis_Service")
+                .setMessage(message)
+                .build());
+
+        channel.shutdown();
     }
 }

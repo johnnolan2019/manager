@@ -8,4 +8,6 @@ public class ServicesConfig {
 
     @Value("${mqtt.topic.name}")
     public static final String MQTT_TOPIC = "validation.alerts.bravo";
+
+    //todo get the uid's and then get the channels for those uid's
 }
