@@ -1,5 +1,6 @@
 package com.cit.micro.manager.service.subscriber;
 
+import com.cit.micro.manager.client.GrpcLoggerClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ public class MessageActionListener implements IMqttActionListener {
     private final String messageText;
     private final String topic;
     private final String userContext;
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final GrpcLoggerClient log = new GrpcLoggerClient();
 
     /**
      * Constructor
@@ -44,7 +45,6 @@ public class MessageActionListener implements IMqttActionListener {
      */
     @Override
     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-        log.error("Threw an Exception in MessageActionListener::onFailure, full stack trace follows:",exception);
-        //System.out.println(String.format("Threw an Exception in MessageActionListener::onFailure, full stack trace follows:"));
+        log.error("Threw an Exception in MessageActionListener::onFailure, full stack trace follows:" + exception.toString());
     }
 }

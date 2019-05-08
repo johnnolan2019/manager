@@ -1,5 +1,6 @@
 package com.cit.micro.manager.service.subscriber;
 
+import com.cit.micro.manager.client.GrpcLoggerClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,11 +8,11 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class GenerteId {
-    private static final Logger log = LoggerFactory.getLogger(GenerteId.class);
+    private final static GrpcLoggerClient log = new GrpcLoggerClient();
 
     public static String generateClientId(){
         String generatedString = generateSafeToken();
-        log.info("new client ID is: {}",generatedString);
+        log.info(String.format("new client ID is: %s", generatedString));
         return generatedString;
     }
 

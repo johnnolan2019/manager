@@ -1,9 +1,9 @@
 package com.cit.micro.manager.service.subscriber;
 
+import com.cit.micro.data.LogData;
+import com.cit.micro.manager.client.GrpcLoggerClient;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
 
@@ -22,7 +22,7 @@ public class MqttSubscribe implements IMqttSubscribe{
     private IMqttToken subscribeToken;
     private String userContext = "default";
     private static final int qos = 2;
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final GrpcLoggerClient log = new GrpcLoggerClient();
     private ApplicationEventPublisher applicationEventPublisher;
 
     /**
@@ -37,7 +37,6 @@ public class MqttSubscribe implements IMqttSubscribe{
     public MqttSubscribe(ApplicationEventPublisher applicationEventPublisher) {
         this.applicationEventPublisher = applicationEventPublisher;
     }
-    public MqttSubscribe(String name) { this.name = name; }
 
     /**
      * Initialize a connection with the given MQTT Broker
@@ -52,20 +51,18 @@ public class MqttSubscribe implements IMqttSubscribe{
             memoryPersistence = new MemoryPersistence();
             if (this.clientId == null){
                 this.clientId = GenerteId.generateClientId();
-                if (log.isDebugEnabled()){
-                    log.debug("Had to set clientID using generateClient");
-                }
+                log.debug("Had to set clientID using generateClient");
+
             }
-            if (log.isInfoEnabled()) {
-                log.info(this.clientId);
-            }
+            log.info(this.clientId);
+
             options.setKeepAliveInterval(100);
             options.setCleanSession(true);
             client = new MqttAsyncClient(broker, this.clientId, memoryPersistence);
             client.setCallback(this);
             connectToken = client.connect(options, null, this);
         } catch (MqttException e) {
-            log.error("Threw an Exception in MqttSubscribe::connect, full stack trace follows:", e);
+            log.error("Threw an Exception in MqttSubscribe::connect, full stack trace follows:" + e.toString());
         }
     }
 
@@ -77,7 +74,7 @@ public class MqttSubscribe implements IMqttSubscribe{
     @Override
     public void connectionLost(Throwable cause) {
         // The MQTT client lost the connection, need to add reconnect...
-        log.error("Threw an Exception in MqttSubscribe::connectionLost, full stack trace follows:",cause);
+        log.error("Threw an Exception in MqttSubscribe::connectionLost, full stack trace follows:" + cause.toString());
         clientId = null;
         connect(mqttBroker,topic);
 
@@ -86,19 +83,17 @@ public class MqttSubscribe implements IMqttSubscribe{
     @Override
     public void onSuccess(IMqttToken asyncActionToken) {
         if (asyncActionToken.equals(connectToken)) {
-            if (log.isInfoEnabled()) {
-                log.info("Connection made");
-            }
+            log.info("Connection made");
             try {
                 subscribeToken = client.subscribe(topic, qos, userContext, this);
                 subscribeToken.waitForCompletion(10000);
             } catch (MqttException e) {
-                log.error("Threw an Exception in MqttSubscribe::onSuccess, full stack trace follows:",e);
+                log.error("Threw an Exception in MqttSubscribe::onSuccess, full stack trace follows:" + e.toString());
             }
         }
         else if (asyncActionToken.equals(subscribeToken))
         {
-            log.info("{} subscribed to the {} topic", name, topic);
+            log.info(String.format("%s subscribed to the %s topic", name, topic));
         }
     }
 
@@ -113,14 +108,14 @@ public class MqttSubscribe implements IMqttSubscribe{
             this.client.disconnect();
         }
         catch (MqttException e) {
-            log.error("Threw an MqttException in MqttSubscribe::terminate, full stack trace follows:",e);
+            log.error("Threw an MqttException in MqttSubscribe::terminate, full stack trace follows:" + e.toString());
         }
     }
 
     @Override
     public void onFailure(IMqttToken asyncActionToken, Throwable exception)
     {
-        log.error("Threw an Exception in MqttSubscribe::onFailure, full stack trace follows:",exception);
+        log.error("Threw an Exception in MqttSubscribe::onFailure, full stack trace follows:" + exception.toString());
     }
 
     /**
@@ -136,13 +131,13 @@ public class MqttSubscribe implements IMqttSubscribe{
             return;
         }
         String messageText = new String(message.getPayload(), ENCODING);
-        if (log.isInfoEnabled()) {
-            log.info("{} received {}: {}", name, topic, messageText);
-        }
+        log.info(String.format("%s received %s: %s", name, topic, messageText));
+
         String[] keyValue = messageText.split(":");
 
         // todo implement this properly..
-        applicationEventPublisher.publishEvent("");
+        LogData logData = LogData.newBuilder().setText(messageText).setUid(name).build();
+        applicationEventPublisher.publishEvent(logData);
     }
 
     /**
@@ -152,8 +147,6 @@ public class MqttSubscribe implements IMqttSubscribe{
      */
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
-        if (log.isInfoEnabled()) {
-            log.info("delivery complete");
-        }
+        log.info("delivery complete");
     }
 }
