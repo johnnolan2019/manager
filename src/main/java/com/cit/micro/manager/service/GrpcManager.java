@@ -27,7 +27,6 @@ public class GrpcManager extends AccessManagerGrpc.AccessManagerImplBase {
     @Override
     public void subscribeNew(Subscribe request, StreamObserver<Result> responseObserver) {
         logger.info("Adding new Subscription");
-        // todo add new subscription
         logger.info(request.getUid());
         LogData logData = LogData.newBuilder().setUid(request.getUid()).setChannel(request.getChannel()).setText("{\"null\":\"null\"}").build();
 
