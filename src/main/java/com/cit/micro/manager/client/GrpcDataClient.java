@@ -20,11 +20,13 @@ import java.util.concurrent.TimeUnit;
 
 @Repository
 public class GrpcDataClient {
+    private String host = "localhost";
+    private int port = 6568;
     private final GrpcLoggerClient logger = new GrpcLoggerClient();
-    private final List<Uid> uidList = new ArrayList<>();
+
 
     public boolean add(LogData logData) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6568)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port)
                 .usePlaintext()
                 .build();
         AccessDBGrpc.AccessDBStub stub = AccessDBGrpc.newStub(channel);
@@ -33,7 +35,7 @@ public class GrpcDataClient {
         StreamObserver<Id> responseObserver = new StreamObserver<Id>() {
             @Override
             public void onNext(Id id) {
-                logger.info("sent???");
+                logger.info("Sent value to DB");
             }
 
             @Override
@@ -60,7 +62,7 @@ public class GrpcDataClient {
         try{
             finishLatch.await(1, TimeUnit.MINUTES);
         }catch (InterruptedException e){
-            logger.error("failed to write to DB");
+            logger.error("Failed to write to DB");
         }
 
         channel.shutdown();
@@ -68,7 +70,8 @@ public class GrpcDataClient {
     }
 
     public List<Uid> getUidList() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6568)
+        List<Uid> uidList = new ArrayList<>();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port)
                 .usePlaintext()
                 .build();
         AccessDBGrpc.AccessDBBlockingStub stub = AccessDBGrpc.newBlockingStub(channel);
@@ -93,13 +96,15 @@ public class GrpcDataClient {
     }
 
     public Channel getChannel(com.cit.micro.data.Uid uid){
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6568)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port)
                 .usePlaintext()
                 .build();
 
         AccessDBGrpc.AccessDBBlockingStub stub = AccessDBGrpc.newBlockingStub(channel);
         Channel mqttChannel = stub.getChanel(uid);
-        logger.info(String.format("Found Channel %s", mqttChannel));
+        logger.info(String.format("Found Channel: %s For UID: %s",
+                mqttChannel.getChannel(),
+                mqttChannel.getUid()));
         channel.shutdown();
 
         return mqttChannel;

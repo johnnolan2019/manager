@@ -17,14 +17,15 @@ public class SubscriberService {
     private MqttSubscribe subscriber;
 
     @Value("${manager.mqttBroker}")
-    private String mqttBroker;
+    private String mqttBroker = "tcp://iot.eclipse.org:1883";
 
     @Autowired
     public SubscriberService(ApplicationEventPublisher applicationEventPublisher){
         this.subscriber = new MqttSubscribe(applicationEventPublisher);
     }
 
-    public void subscribe(String mqttTopic){
+    public void subscribe(String mqttTopic, String name){
+        subscriber.setName(name);
         subscriber.setClientId(GenerteId.generateClientId());
         subscriber.connect(mqttBroker, mqttTopic);
     }

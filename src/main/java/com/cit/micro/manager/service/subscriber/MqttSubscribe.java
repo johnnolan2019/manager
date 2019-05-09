@@ -2,6 +2,7 @@ package com.cit.micro.manager.service.subscriber;
 
 import com.cit.micro.data.LogData;
 import com.cit.micro.manager.client.GrpcLoggerClient;
+import com.cit.micro.manager.events.LogDataEvent;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,6 +31,7 @@ public class MqttSubscribe implements IMqttSubscribe{
      */
 
     public void setClientId(String clientId) { this.clientId = clientId; }
+    public void setName(String name) { this.name = name; }
 
     /**
      * Constructors
@@ -52,10 +54,7 @@ public class MqttSubscribe implements IMqttSubscribe{
             if (this.clientId == null){
                 this.clientId = GenerteId.generateClientId();
                 log.debug("Had to set clientID using generateClient");
-
             }
-            log.info(this.clientId);
-
             options.setKeepAliveInterval(100);
             options.setCleanSession(true);
             client = new MqttAsyncClient(broker, this.clientId, memoryPersistence);
@@ -83,7 +82,7 @@ public class MqttSubscribe implements IMqttSubscribe{
     @Override
     public void onSuccess(IMqttToken asyncActionToken) {
         if (asyncActionToken.equals(connectToken)) {
-            log.info("Connection made");
+            log.debug("Connection made");
             try {
                 subscribeToken = client.subscribe(topic, qos, userContext, this);
                 subscribeToken.waitForCompletion(10000);
@@ -135,9 +134,9 @@ public class MqttSubscribe implements IMqttSubscribe{
 
         String[] keyValue = messageText.split(":");
 
-        // todo implement this properly..
         LogData logData = LogData.newBuilder().setText(messageText).setUid(name).build();
-        applicationEventPublisher.publishEvent(logData);
+        LogDataEvent logDataEvent = new LogDataEvent(this, logData);
+        applicationEventPublisher.publishEvent(logDataEvent);
     }
 
     /**

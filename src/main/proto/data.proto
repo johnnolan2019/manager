@@ -12,6 +12,7 @@ message LogData {
 
 message Channel{
     string channel = 1;
+    string uid = 2;
 }
 
 message Id{

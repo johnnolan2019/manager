@@ -1,12 +1,12 @@
-package com.cit.micro.manager.service;
+package com.cit.micro.manager.events;
 
 import com.cit.micro.data.LogData;
 import org.springframework.context.ApplicationEvent;
 
-public class AlertEvent extends ApplicationEvent {
+public class LogDataEvent extends ApplicationEvent {
     private LogData logData;
 
-    public AlertEvent(Object source, LogData logData){
+    public LogDataEvent(Object source, LogData logData){
         super(source);
         this.logData = logData;
     }
