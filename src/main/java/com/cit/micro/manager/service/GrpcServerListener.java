@@ -12,7 +12,7 @@ import java.io.IOException;
 public class GrpcServerListener {
     private static final GrpcLoggerClient logger = new GrpcLoggerClient();
     private static GrpcManager grpcManager;
-    private static int port = 6569;
+    private    static int port = 6569;
 
     @Autowired
     public GrpcServerListener(GrpcManager grpcManagerInjected){
