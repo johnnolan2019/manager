@@ -96,7 +96,6 @@ public class MqttSubscribe implements IMqttSubscribe{
         }
     }
 
-
     /**
      * Terminate the MQTT client connection.
      */
