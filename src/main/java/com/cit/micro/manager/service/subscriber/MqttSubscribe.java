@@ -134,7 +134,7 @@ public class MqttSubscribe implements IMqttSubscribe{
 
         String[] keyValue = messageText.split(":");
 
-        LogData logData = LogData.newBuilder().setText(messageText).setUid(name).build();
+        LogData logData = LogData.newBuilder().setText(messageText).setUid(name).setChannel(topic).build();
         LogDataEvent logDataEvent = new LogDataEvent(this, logData);
         applicationEventPublisher.publishEvent(logDataEvent);
     }
