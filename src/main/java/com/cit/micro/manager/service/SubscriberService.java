@@ -15,6 +15,16 @@ import org.springframework.stereotype.Service;
 public class SubscriberService {
     private final GrpcLoggerClient log = new GrpcLoggerClient();
     private MqttSubscribe subscriber;
+    private String mqttTopic;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public String getMqttBroker() {
+        return mqttBroker;
+    }
 
     @Value("${manager.mqttBroker}")
     private String mqttBroker = "tcp://iot.eclipse.org:1883";
@@ -25,6 +35,8 @@ public class SubscriberService {
     }
 
     public void subscribe(String mqttTopic, String name){
+        this.mqttTopic = mqttTopic;
+        this.name = name;
         subscriber.setName(name);
         subscriber.setClientId(GenerteId.generateClientId());
         subscriber.connect(mqttBroker, mqttTopic);

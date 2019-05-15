@@ -8,6 +8,7 @@ import com.cit.micro.manager.events.AddNewEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -54,11 +55,27 @@ public class ManagerService implements ApplicationListener<AddNewEvent> {
         }
     }
 
+    @Scheduled(fixedDelay = 360000, initialDelay = 360000)
+    public void cleanUp(){
+        for (SubscriberService subscriberService:subscriberServices){
+            if (! subscriberService.connected()){
+                log.info(String.format("Reconnecting Channel: %s for UID: %s",
+                        subscriberService.getMqttBroker(),
+                        subscriberService.getName()));
+                SubscriberService subscriberServiceNew = new SubscriberService(applicationEventPublisher);
+                subscriberServiceNew.subscribe(subscriberService.getMqttBroker(), subscriberService.getName());
+                subscriberServices.add(subscriberServiceNew);
+                subscriberServices.remove(subscriberService);
+            }
+        }
+    }
+
     @Override
     public void onApplicationEvent(AddNewEvent event){
         SubscriberService subscriberService = new SubscriberService(applicationEventPublisher);
         subscriberService.subscribe(event.getSubscribe().getChannel(),
                 event.getSubscribe().getUid());
         subscriberServices.add(subscriberService);
+        cleanUp();
     }
 }

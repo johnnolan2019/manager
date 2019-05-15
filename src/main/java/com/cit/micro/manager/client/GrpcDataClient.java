@@ -24,7 +24,6 @@ public class GrpcDataClient {
     private int port = 6568;
     private final GrpcLoggerClient logger = new GrpcLoggerClient();
 
-
     public boolean add(LogData logData) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port)
                 .usePlaintext()
