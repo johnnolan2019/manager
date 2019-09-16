@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 public class GrpcLoggerClient {
 
     private String serviceName = "Manager_Service";
-    private String host = "logger-service";
+    private String host = "localhost";
     private int port = 6565;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

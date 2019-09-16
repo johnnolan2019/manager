@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 @Repository
 public class GrpcDataClient {
-    private String host = "data-service";
+    private String host = "localhost";
     private int port = 6568;
     private final GrpcLoggerClient logger = new GrpcLoggerClient();
 
